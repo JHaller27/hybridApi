@@ -1,6 +1,6 @@
 FROM python:3.9
 
-EXPOSE 80
+EXPOSE 8000
 
 RUN mkdir -p /app
 COPY . /app
