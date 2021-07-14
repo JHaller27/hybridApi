@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 from fastapi import FastAPI
 import models
 import scraper
@@ -12,8 +12,8 @@ def home():
     return scraper.get_exercises()
 
 
-@app.get("/debug", response_model=models.Debug)
+@app.get("/debug", response_model=dict[str, Any])
 def debug():
     import os
     keys = {k: v for k, v in os.environ.items()}
-    return models.Debug(data={"os_environ_keys": keys})
+    return {"os_environ_keys": keys}

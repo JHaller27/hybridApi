@@ -11,6 +11,3 @@ class ExerciseType(BaseModel):
     name: str
     exercises: list[Exercise]
 
-
-class Debug(BaseModel):
-    data: dict[str, Any]
