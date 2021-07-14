@@ -1,20 +1,12 @@
 from bs4 import BeautifulSoup
 import requests
 import re
+
 import models
-import redis
-import os
+import cache as redis_cache
 
 
-seconds_per_minute = 60
-minutes_per_hour = 60
-REDIS_TIMEOUT = seconds_per_minute * minutes_per_hour * 1
-
-redis_uri = os.environ.get("QOVERY_DATABASE_CALL_CACHE_CONNECTION_URI", "localhost")
-redis_port = os.environ.get("QOVERY_DATABASE_CALL_CACHE_PORT", "7777")
-
-cache = redis.Redis(host=redis_uri, port=redis_port, db=0)
-cache.flushall()
+cache = redis_cache.Cache()
 
 
 def get_exercises() -> models.Response:
@@ -58,6 +50,9 @@ def get_exercises() -> models.Response:
         for sw, goal in sws:
             retv.exercises[-1].exercises.append(models.Exercise(name=sw, goal=goal))
 
-    print("Storing in redis")
-    cache.set("data", retv.json(), ex=600)
+    if cache.set("data", retv.json()):
+        print("Stored in redis")
+    else:
+        print("Failed to store in redis")
+
     return retv
