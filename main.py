@@ -15,5 +15,5 @@ def home():
 @app.get("/debug", response_model=models.Debug)
 def debug():
     import os
-    keys = [k for k in os.environ.keys()]
+    keys = {k: v for k, v in os.environ.items()}
     return models.Debug(data={"os_environ_keys": keys})
