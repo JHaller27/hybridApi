@@ -1,3 +1,4 @@
+from typing import Any
 from pydantic import BaseModel
 
 
@@ -9,3 +10,7 @@ class Exercise(BaseModel):
 class ExerciseType(BaseModel):
     name: str
     exercises: list[Exercise]
+
+
+class Debug(BaseModel):
+    data: dict[str, Any]
