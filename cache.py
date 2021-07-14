@@ -1,6 +1,14 @@
 from typing import Any, Union
+from enum import Enum
 import redis
 import os
+
+
+class Mode(Enum):
+    live = 0   # Get live data
+    cache = 1  # Get data from cache (even if its old)
+    auto = 2   # Get cached data first, and get live data iff cached data does not exist
+    eager = 3  # Get live data first, and get cached data iff live encounters an error
 
 
 class Cache:
@@ -21,7 +29,7 @@ class Cache:
         except redis.exceptions.ConnectionError:
             print("Failed to connect to redis")
 
-    def get(self, key: str) -> Union[Any, None]:
+    def get(self, key: str, mode: Mode = Mode.auto) -> Union[Any, None]:
         if self._redis is None:
             return None
 
