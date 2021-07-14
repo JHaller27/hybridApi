@@ -9,3 +9,7 @@ class Exercise(BaseModel):
 class ExerciseType(BaseModel):
     name: str
     exercises: list[Exercise]
+
+
+class Response(BaseModel):
+    exercises: list[ExerciseType]

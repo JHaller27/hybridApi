@@ -2,9 +2,22 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import models
+import redis
 
 
-def get_exercises() -> list[models.ExerciseType]:
+seconds_per_minute = 60
+minutes_per_hour = 60
+REDIS_TIMEOUT = seconds_per_minute * minutes_per_hour * 1
+
+cache = redis.Redis(host="localhost", port=7777, db=0)
+cache.flushall()
+
+
+def get_exercises() -> models.Response:
+    if data := cache.get("data"):
+        print("Found in redis")
+        return models.Response.parse_raw(data)
+
     sub_heading_regex = re.compile(r"^(?P<pos>\d+).*")
 
     response = requests.get("https://www.hybridcalisthenics.com/routine")
@@ -34,11 +47,13 @@ def get_exercises() -> list[models.ExerciseType]:
 
             sub_workouts[-1].append((h.text, p.text))
 
-    retv = []
+    retv = models.Response(exercises=[])
     for w, sws in zip(workouts, sub_workouts):
-        retv.append(models.ExerciseType(name=w, exercises=[]))
+        retv.exercises.append(models.ExerciseType(name=w, exercises=[]))
 
         for sw, goal in sws:
-            retv[-1].exercises.append(models.Exercise(name=sw, goal=goal))
+            retv.exercises[-1].exercises.append(models.Exercise(name=sw, goal=goal))
 
+    print("Storing in redis")
+    cache.set("data", retv.json(), ex=600)
     return retv

@@ -6,6 +6,6 @@ import scraper
 app = FastAPI(title="Hybrid Calisthenics API")
 
 
-@app.get("/", response_model=list[models.ExerciseType])
+@app.get("/", response_model=models.Response)
 def home():
     return scraper.get_exercises()
