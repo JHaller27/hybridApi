@@ -1,3 +1,4 @@
+from typing import Any
 from pydantic import BaseModel
 
 
@@ -13,3 +14,7 @@ class ExerciseType(BaseModel):
 
 class Response(BaseModel):
     exercises: list[ExerciseType]
+
+
+class Debug(BaseModel):
+    data: dict[str, Any]
