@@ -3,13 +3,17 @@ import requests
 import re
 import models
 import redis
+import os
 
 
 seconds_per_minute = 60
 minutes_per_hour = 60
 REDIS_TIMEOUT = seconds_per_minute * minutes_per_hour * 1
 
-cache = redis.Redis(host="localhost", port=7777, db=0)
+redis_uri = os.environ.get("QOVERY_DATABASE_CALL_CACHE_CONNECTION_URI", "localhost")
+redis_port = os.environ.get("QOVERY_DATABASE_CALL_CACHE_PORT", "7777")
+
+cache = redis.Redis(host=redis_uri, port=redis_port, db=0)
 cache.flushall()
 
 
